@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quizzler/quizbrain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 void main() {
   runApp(const Quizzler());
@@ -13,21 +14,25 @@ class Quizzler extends StatefulWidget {
 }
 
 class _QuizzlerState extends State<Quizzler> {
-  QuizBrain quiz=QuizBrain();
+  QuizBrain quiz = QuizBrain();
   List<Icon> scorekeeper = [];
 
-  void onpress(bool user)
-  {
-    if(quiz.checkanswer(user))
-    {
-      scorekeeper.add(const Icon(Icons.check,color: Colors.green,));
+  void onpress(bool user) {
+    if (quiz.checkanswer(user)) {
+      scorekeeper.add(const Icon(
+        Icons.check,
+        color: Colors.green,
+      ));
+    } else {
+      scorekeeper.add(const Icon(Icons.close, color: Colors.red));
     }
-    else
-    {
-      scorekeeper.add(const Icon(Icons.close,color: Colors.red));
-    }
-
   }
+
+  void reset() {
+    quiz.reset();
+    scorekeeper.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -42,7 +47,10 @@ class _QuizzlerState extends State<Quizzler> {
                   child: SizedBox(
                     height: 450,
                     width: 300,
-                    child: Center(child: Text(quiz.question(),style: const TextStyle(color: Colors.white,fontSize: 20))),
+                    child: Center(
+                        child: Text(quiz.question(),
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 20))),
                   ),
                 ),
               ),
@@ -50,32 +58,45 @@ class _QuizzlerState extends State<Quizzler> {
                 height: 30,
               ),
               TextButton(
-
                 child: Container(
                   height: 60,
                   width: 300,
                   color: Colors.green,
-                  child: const Center(child: Text('True',style: TextStyle(color: Colors.white,fontSize: 25),)),
+                  child: const Center(
+                      child: Text(
+                    'True',
+                    style: TextStyle(color: Colors.white, fontSize: 25),
+                  )),
                 ),
                 onPressed: () {
                   onpress(true);
-                   setState(() {
-                     quiz.nextquestion();
-                   });
+                  setState(() {
+                    if (quiz.isfinished()) {
+                      reset();
+                    }
+                    quiz.nextquestion();
+                  });
                 },
               ),
               TextButton(
-
                 child: Container(
                   height: 60,
-                  width:300,
+                  width: 300,
                   color: Colors.red,
-                  child: const Center(child: Text('False',style: TextStyle(color: Colors.white,fontSize: 25),)),
+                  child: const Center(
+                      child: Text(
+                    'False',
+                    style: TextStyle(color: Colors.white, fontSize: 25),
+                  )),
                 ),
                 onPressed: () {
                   onpress(false);
                   setState(() {
+                    if (quiz.isfinished()) {
+                      reset();
+                    }
                     quiz.nextquestion();
+
                   });
                 },
               ),
